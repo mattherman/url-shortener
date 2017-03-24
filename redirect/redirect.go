@@ -3,16 +3,13 @@ package redirect
 import (
 	"html"
 	"net/http"
-)
 
-var urls = map[string]string{
-	"ggl": "http://www.google.com",
-	"so":  "http://www.stackoverflow.com",
-	"ds":  "http://www.directsupply.com",
-}
+	"github.com/mattherman/url-shortener/store"
+)
 
 // Redirect will redirect the client based on the shortened URL provided
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	path := html.EscapeString(r.URL.Path[1:])
-	http.Redirect(w, r, urls[path], 303)
+	redirectURL := store.Get(path)
+	http.Redirect(w, r, redirectURL, 303)
 }
