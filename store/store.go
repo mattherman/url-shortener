@@ -20,7 +20,7 @@ type AliasAlreadyExists struct {
 }
 
 func (e AliasAlreadyExists) Error() string {
-	return "An alias with key " + e.alias + "already exists for a different URL."
+	return "An alias with key " + e.alias + " already exists for a different URL."
 }
 
 // Set persists an alias with the specified URL. Returns an error

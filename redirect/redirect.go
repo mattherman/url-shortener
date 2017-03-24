@@ -46,6 +46,7 @@ func AddRedirect(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		httputil.RespondWithError(w, err, http.StatusConflict)
+		return
 	}
 
 	shortenedURL := "http://" + r.Host + "/" + alias

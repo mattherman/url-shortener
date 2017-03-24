@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>URL Shortener</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    </head>
+    <body>
+        <h2>URL Shortener</h2>
+        <div>URL: <input id="url" type="text" /></div>
+        <div>Alias: <input id="alias" type="text" /></div>
+        <div><input type="button" value="Submit" onclick="submit()"/></div>
+        <div><a id="result" href=""></a></div>
+    </body>
+
+    <script>
+        function submit() {
+            setResult("")
+
+            var url = $("#url").val();
+            var alias = $("#alias").val();
+
+            $.post("/create/" + alias, url, function( data ) {
+                setResult(data)
+            }).fail(function(error) {
+                alert(error.responseText);
+            });
+        }
+
+        function setResult(url) {
+            $("#result").attr('href', url);
+            $("#result").text(url);
+        }
+    </script>
+</html>
