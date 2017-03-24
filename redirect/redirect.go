@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -16,6 +17,9 @@ import (
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	alias := mux.Vars(r)["alias"]
 	redirectURL := store.Get(alias)
+
+	log.Println("Redirecting " + alias + " to " + redirectURL)
+
 	http.Redirect(w, r, redirectURL, 303)
 }
 
@@ -50,6 +54,9 @@ func AddRedirect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	shortenedURL := "http://" + r.Host + "/" + alias
+
+	log.Println("Created alias to " + bodyString + " with key " + alias)
+
 	httputil.RespondWithValue(w, shortenedURL)
 }
 
