@@ -1,0 +1,17 @@
+version: '2'
+services:
+  web:
+    image: "mattherman/url-shortener"
+    ports:
+     - "8080:8080"
+    depends_on:
+     - redis
+    links:
+     - redis
+    environment:
+    - REDIS_HOST=redis:6379
+    - URL_SH_PORT=8080
+  redis:
+    image: "redis"
+    ports:
+     - "6379:6379"

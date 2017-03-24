@@ -2,7 +2,9 @@ package store
 
 import (
 	"log"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -30,7 +32,18 @@ var connection redis.Conn
 
 // CreateConnection will set the Redis connection for the store
 func CreateConnection(host string) {
-	conn, err := redis.Dial("tcp", host)
+	var conn redis.Conn
+	var err error
+	for i := 1; i <= 5 && conn == nil; i++ {
+		log.Println("Redis connection attempt #" + strconv.Itoa(i) + "...")
+		conn, err = redis.Dial("tcp", host)
+
+		if conn != nil {
+			break
+		}
+
+		time.Sleep(time.Second * 1)
+	}
 
 	if err != nil {
 		log.Fatal("Failed to open connection to Redis: " + err.Error())
