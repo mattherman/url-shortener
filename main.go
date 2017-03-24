@@ -5,13 +5,27 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/gorilla/mux"
 	"github.com/mattherman/url-shortener/config"
 	"github.com/mattherman/url-shortener/redirect"
+	"github.com/mattherman/url-shortener/store"
 )
 
 func main() {
 	log.SetOutput(os.Stdout)
+
+	config := getConfig()
+
+	conn, err := redis.Dial("tcp", config.RedisHost)
+	//defer conn.Close()
+
+	if err != nil {
+		log.Fatal("Failed to open connection to Redis: " + err.Error())
+		return
+	}
+
+	store.SetConnection(conn)
 
 	r := mux.NewRouter()
 
@@ -22,19 +36,16 @@ func main() {
 		http.ServeFile(w, r, "./static/index.html")
 	})
 
-	logConfig()
+	log.Println("Ready to accept requests on port " + config.Port + "...")
 
-	port := "8080"
-
-	log.Println("Ready to accept requests on port " + port + "...")
-
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	log.Fatal(http.ListenAndServe(":"+config.Port, r))
 }
 
-func logConfig() config.Config {
+func getConfig() config.Config {
 	configuration := config.Read()
 
 	log.Println("RedisHost = " + configuration.RedisHost)
+	log.Println("Port = " + configuration.Port)
 
 	return configuration
 }

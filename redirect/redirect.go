@@ -16,7 +16,12 @@ import (
 // Redirect will redirect the client based on the shortened URL provided
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	alias := mux.Vars(r)["alias"]
-	redirectURL := store.Get(alias)
+	redirectURL, err := store.Get(alias)
+
+	if err != nil {
+		httputil.RespondWithError(w, err, 500)
+		return
+	}
 
 	log.Println("Redirecting " + alias + " to " + redirectURL)
 
