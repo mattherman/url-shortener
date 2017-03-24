@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/garyburd/redigo/redis"
 	"github.com/gorilla/mux"
 	"github.com/mattherman/url-shortener/config"
 	"github.com/mattherman/url-shortener/redirect"
@@ -17,15 +16,8 @@ func main() {
 
 	config := getConfig()
 
-	conn, err := redis.Dial("tcp", config.RedisHost)
-	//defer conn.Close()
-
-	if err != nil {
-		log.Fatal("Failed to open connection to Redis: " + err.Error())
-		return
-	}
-
-	store.SetConnection(conn)
+	store.CreateConnection(config.RedisHost)
+	defer store.DestroyConnection()
 
 	r := mux.NewRouter()
 

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"log"
 	"strings"
 
 	"github.com/garyburd/redigo/redis"
@@ -27,9 +28,25 @@ func (e AliasAlreadyExists) Error() string {
 
 var connection redis.Conn
 
-// SetConnection will set the Redis connection for the store
-func SetConnection(conn redis.Conn) {
+// CreateConnection will set the Redis connection for the store
+func CreateConnection(host string) {
+	conn, err := redis.Dial("tcp", host)
+
+	if err != nil {
+		log.Fatal("Failed to open connection to Redis: " + err.Error())
+		return
+	}
+
 	connection = conn
+}
+
+// DestroyConnection will close a connection if it exists
+func DestroyConnection() {
+	err := verifyConnection()
+
+	if err == nil {
+		connection.Close()
+	}
 }
 
 func verifyConnection() error {
