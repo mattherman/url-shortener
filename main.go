@@ -4,11 +4,15 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mattherman/url-shortener/redirect"
 )
 
 func main() {
-	http.HandleFunc("/", redirect.Redirect)
+	r := mux.NewRouter()
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	r.HandleFunc("/{alias}", redirect.Redirect).Methods("GET")
+	r.HandleFunc("/create", redirect.AddRedirect).Methods("POST")
+
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
