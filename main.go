@@ -12,7 +12,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/{alias}", redirect.Redirect).Methods("GET")
-	r.HandleFunc("/create", redirect.AddRedirect).Methods("POST")
+	r.HandleFunc("/create/{alias}", redirect.AddRedirect).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

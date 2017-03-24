@@ -21,6 +21,7 @@ func Redirect(w http.ResponseWriter, r *http.Request) {
 
 // AddRedirect will create a new alias to the specified URL
 func AddRedirect(w http.ResponseWriter, r *http.Request) {
+	alias := mux.Vars(r)["alias"]
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -37,15 +38,17 @@ func AddRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hash := hash(body)
+	if alias == "" {
+		alias = hash(body)
+	}
 
-	err = store.Set(hash, bodyString)
+	err = store.Set(alias, bodyString)
 
 	if err != nil {
 		httputil.RespondWithError(w, err, http.StatusConflict)
 	}
 
-	shortenedURL := "http://" + r.Host + "/" + hash
+	shortenedURL := "http://" + r.Host + "/" + alias
 	httputil.RespondWithValue(w, shortenedURL)
 }
 
