@@ -5,8 +5,10 @@ import (
 	"hash/fnv"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
+	"github.com/mattherman/url-shortener/httputil"
 	"github.com/mattherman/url-shortener/store"
 )
 
@@ -19,14 +21,28 @@ func Redirect(w http.ResponseWriter, r *http.Request) {
 
 // AddRedirect will create a new alias to the specified URL
 func AddRedirect(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		httputil.RespondWithError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	bodyString := string(body[:])
+
+	_, err = url.ParseRequestURI(bodyString)
+
+	if err != nil {
+		httputil.RespondWithErrorMessage(w, "Invalid URL provided", http.StatusBadRequest)
+		return
+	}
 
 	hash := hash(body)
 
-	store.Set(hash, string(body[:]))
+	store.Set(hash, bodyString)
 
 	shortenedURL := "http://" + r.Host + "/" + hash
-	fmt.Fprintf(w, shortenedURL)
+	httputil.RespondWithValue(w, shortenedURL)
 }
 
 func hash(s []byte) string {
