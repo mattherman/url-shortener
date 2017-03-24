@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/mattherman/url-shortener/config"
 	"github.com/mattherman/url-shortener/redirect"
 )
 
@@ -21,9 +22,19 @@ func main() {
 		http.ServeFile(w, r, "./static/index.html")
 	})
 
+	logConfig()
+
 	port := "8080"
 
 	log.Println("Ready to accept requests on port " + port + "...")
 
 	log.Fatal(http.ListenAndServe(":"+port, r))
+}
+
+func logConfig() config.Config {
+	configuration := config.Read()
+
+	log.Println("RedisHost = " + configuration.RedisHost)
+
+	return configuration
 }
