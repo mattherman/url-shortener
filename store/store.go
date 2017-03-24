@@ -10,3 +10,8 @@ var urls = map[string]string{
 func Get(alias string) string {
 	return urls[alias]
 }
+
+// Set persists an alias with the specified URL
+func Set(alias string, url string) {
+	urls[alias] = url
+}
