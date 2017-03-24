@@ -39,7 +39,11 @@ func AddRedirect(w http.ResponseWriter, r *http.Request) {
 
 	hash := hash(body)
 
-	store.Set(hash, bodyString)
+	err = store.Set(hash, bodyString)
+
+	if err != nil {
+		httputil.RespondWithError(w, err, http.StatusConflict)
+	}
 
 	shortenedURL := "http://" + r.Host + "/" + hash
 	httputil.RespondWithValue(w, shortenedURL)
