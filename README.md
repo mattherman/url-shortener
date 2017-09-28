@@ -1,6 +1,6 @@
 A URL shortener service written in Go. Uses Redis for persistence. Written as a (mini) hackathon project in order to play with docker-compose and AWS.
 
-Can be run locally via:
+Can be run locally using the following command:
 
 ```docker-compose up```
 
